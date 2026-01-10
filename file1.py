@@ -4,7 +4,7 @@ meme_dict={"CRING": "qualcosa che ti fa mettere in imbarazzo,è imbarazzante",
            "LAGGARE": "quando la rete non ti prende bene",
             "PARA": "preoccuparsi per qualcosa"}
 parola = input("Scrivi una parola di cui nn conosci il significato (preferibilmente in maiuscolo")
-
+#condizione
 if parola in meme_dict.keys():
     print(meme_dict[parola])
 else:
