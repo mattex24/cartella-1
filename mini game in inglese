@@ -1,0 +1,69 @@
+import sounddevice as sd
+import numpy as np
+import scipy.io.wavfile as wav
+import speech_recognition as sr
+from googletrans import Translator
+import random
+import time
+
+words_by_level = {
+    "facile": ["gatto", "cane", "mela", "latte", "sole"],
+    "medio": ["banana", "scuola", "amico", "finestra", "giallo"],
+    "difficile": ["tecnologia", "università", "informazione", "pronuncia", "immaginazione"]
+}
+
+livello=input("quale livello vorrai affrontare?facile,medio o difficile  ")
+
+
+
+for word in words_by_level[livello]:
+    print("La parola è:", word)  
+    time.sleep(5)  
+
+
+
+
+    duration = 5  # secondi di registrazione
+    sample_rate = 44100
+
+
+
+    print("Parla ora...")
+    recording = sd.rec(
+        int(duration * sample_rate), # il numero di campioni da registrare
+        samplerate=sample_rate,      # frequenza di campionamento
+        channels=1,                  # 1 significa registrazione mono
+        dtype="int16")               # tipo di dati per i campioni registrati
+    sd.wait()  # in attesa che la registrazione finisca
+
+
+    wav.write("output.wav", sample_rate, recording)
+    print("Registrazione completata, ora in fase di riconoscimento...")
+
+    recognizer = sr.Recognizer()
+    with sr.AudioFile("output.wav") as source:
+        audio = recognizer.record(source)
+
+
+
+
+
+    try:
+        text = recognizer.recognize_google(audio, language="en").lower()
+        print("Hai detto:", text)
+
+
+
+        translator = Translator()
+        translated = translator.translate(word,src="it", dest='en').text.lower()  # “en” qui è un codice per lo spagnolo
+        print("🌍 Traduzione in inglese:", translated)
+
+        if text == translated:
+            print("hai pronunciato correttamente la parola + 1 punto")
+        else:
+            print("mi dispiace, hai sbagliato, game over ")
+            break
+    except sr.UnknownValueError:             # - se Google non è riuscito a comprendere il discorso a causa di rumori o silenzi
+        print("Il parlato non è stato riconosciuto.")
+    except sr.RequestError as e:             # - se non c'è connessione Internet o l'API non è disponibile
+        print(f"Errore di servizio: {e}")
